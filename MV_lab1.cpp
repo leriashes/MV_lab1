@@ -101,6 +101,12 @@ vector <vector <double> > LU_decomp(vector <vector <double> > matrix)
 
 	for (int k = 0; k < n;)
 	{
+		if (result[k][k] == 0)
+		{
+			cout << "Главный минор равен нулю! Нельзя применить LU-разложение.";
+			exit(0);
+		}
+
 		//столбец L
 		for (int i = k + 1; i < n; i++)
 		{
