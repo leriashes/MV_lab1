@@ -48,7 +48,8 @@ bool readFile(vector <vector <double> >& matrix)
 
 			getline(f, str);
 
-			if (str_num > matrix[0].size()) {
+			if (str_num > matrix[0].size()) 
+			{
 				end = true;
 			}
 		}
@@ -72,7 +73,9 @@ bool readFile(vector <vector <double> >& matrix)
 			}
 
 			if (str_num + 1 != matrix[0].size())
+			{
 				end = true;
+			}
 		}
 
 		f.close();
@@ -87,17 +90,62 @@ bool readFile(vector <vector <double> >& matrix)
 	return result;
 }
 
+//LU-разложение
+vector <vector <double> > LU_decomp(vector <vector <double> > matrix)
+{
+	vector <vector <double> > result;
+
+	result = matrix;
+
+	int n = matrix.size();
+
+	for (int k = 0; k < n;)
+	{
+		//столбец L
+		for (int i = k + 1; i < n; i++)
+		{
+			double sum = 0;
+
+			for (int p = 0; p < k; p++)
+			{
+				sum += result[i][p] * result[p][k];
+			}
+
+			result[i][k] = (result[i][k] - sum) / result[k][k];
+		}
+
+		k++;
+
+		//строка U
+		for (int j = k; j < n; j++)
+		{
+			double sum = 0;
+
+			for (int p = 0; p < k; p++)
+			{
+				sum += result[k][p] * result[p][j];
+			}
+
+			result[k][j] -= sum;
+		}
+	}
+
+	return result;
+}
 
 int main()
 {
 	setlocale(LC_ALL, "Rus");
 
 	vector <vector <double> > matrix;
+	vector <vector <double> > LU_matrix;
 
 	if (readFile(matrix))
 	{
 		return -1;
 	}
+
+	LU_matrix = LU_decomp(matrix);
 
 	return 0;
 }
