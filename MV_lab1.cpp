@@ -273,5 +273,14 @@ int main()
 	cout << "Вектор X" << endl;
 	printVector(vector_X);
 
+	double det = 1;
+
+	for (int i = 0; i < n; i++)
+	{
+		det *= LU_matrix[i][i];
+	}
+
+	cout << "Определитель \ndet A = " << det;
+
 	return 0;
 }
