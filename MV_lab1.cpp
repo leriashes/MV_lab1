@@ -163,6 +163,30 @@ vector <vector <double> > countY(vector <vector <double> > matrix)
 	return result;
 }
 
+//решение системы Ux = y (поиск x)
+vector <double> countX(vector <vector <double> > matrix)
+{
+	vector <double> result;
+
+	int n = matrix.size();
+
+	result.resize(n);
+
+	for (int i = n - 1; i >= 0; i--)
+	{
+		double sum = 0;
+
+		for (int k = i + 1; k < n; k++)
+		{
+			sum += matrix[i][k] * result[k];
+		}
+
+		result[i] = (matrix[i][n] - sum) / matrix[i][i];
+	}
+
+	return result;
+}
+
 int main()
 {
 	setlocale(LC_ALL, "Rus");
@@ -170,6 +194,7 @@ int main()
 	vector <vector <double> > matrix;
 	vector <vector <double> > LU_matrix;
 	vector <vector <double> > triangle_matrix;
+	vector <double> vector_X;
 
 	if (readFile(matrix))
 	{
@@ -179,6 +204,8 @@ int main()
 	LU_matrix = LU_decomp(matrix);
 	
 	triangle_matrix = countY(LU_matrix);
+
+	vector_X = countX(triangle_matrix);
 
 	return 0;
 }
