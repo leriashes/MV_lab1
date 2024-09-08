@@ -90,6 +90,52 @@ bool readFile(vector <vector <double> >& matrix)
 	return result;
 }
 
+//вывод матрицы
+void printMatrix(vector <vector <double> > matrix)
+{
+	int k = matrix.size();
+
+	for (int i = 0; i < k; i++)
+	{
+		for (int j = 0; j < k; j++)
+		{
+			cout << matrix[i][j] << " ";
+		}
+
+		cout << endl;
+	}
+
+	return;
+}
+
+//вывод вектора
+void printVector(vector <double> vec)
+{
+	int k = vec.size();
+
+	for (int i = 0; i < k; i++)
+	{
+		cout << vec[i] << " " << endl;
+	}
+
+	cout << endl;
+
+	return;
+}
+
+//вывод вектора
+void printVector(vector <vector <double> > matrix, int column)
+{
+	for (int i = 0; i < column; i++)
+	{
+		cout << matrix[i][column] << " " << endl;
+	}
+
+	cout << endl;
+
+	return;
+}
+
 //LU-разложение
 vector <vector <double> > LU_decomp(vector <vector <double> > matrix)
 {
@@ -201,11 +247,31 @@ int main()
 		return -1;
 	}
 
+	cout << "--- ДАНО ---" << endl;
+	cout << "Матрица A" << endl;
+	printMatrix(matrix);
+
+	int n = matrix.size();
+
+	cout << endl << "Вектор B" << endl;
+	printVector(matrix, n);
+
 	LU_matrix = LU_decomp(matrix);
+
+	cout << "--- РЕШЕНИЕ ---" << endl;
+	cout << "Матрица L - E + U" << endl;
+	printMatrix(LU_matrix);
 	
 	triangle_matrix = countY(LU_matrix);
 
+	cout << endl << "Вектор Y" << endl;
+	printVector(triangle_matrix, n);
+
 	vector_X = countX(triangle_matrix);
+
+	cout << "--- ОТВЕТ ---" << endl;
+	cout << "Вектор X" << endl;
+	printVector(vector_X);
 
 	return 0;
 }
