@@ -139,12 +139,37 @@ vector <vector <double> > LU_decomp(vector <vector <double> > matrix)
 	return result;
 }
 
+//решение системы Ly = b (поиск y)
+vector <vector <double> > countY(vector <vector <double> > matrix)
+{
+	vector <vector <double> > result;
+
+	result = matrix;
+
+	int n = matrix.size();
+
+	for (int i = 0; i < n; i++)
+	{
+		double sum = 0;
+
+		for (int k = 0; k < i; k++)
+		{
+			sum += result[k][n] * result[i][k];
+		}
+
+		result[i][n] -= sum;
+	}
+
+	return result;
+}
+
 int main()
 {
 	setlocale(LC_ALL, "Rus");
 
 	vector <vector <double> > matrix;
 	vector <vector <double> > LU_matrix;
+	vector <vector <double> > triangle_matrix;
 
 	if (readFile(matrix))
 	{
@@ -152,6 +177,8 @@ int main()
 	}
 
 	LU_matrix = LU_decomp(matrix);
+	
+	triangle_matrix = countY(LU_matrix);
 
 	return 0;
 }
