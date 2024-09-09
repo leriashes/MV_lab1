@@ -136,6 +136,25 @@ void printVector(vector <vector <double> > matrix, int column)
 	return;
 }
 
+//определение невязок
+vector <double> residual(vector <vector <double> > matrix, vector <double> x)
+{
+	vector <double> r;
+	int k = matrix.size();
+
+	for (int i = 0; i < k; i++)
+	{
+		r.push_back(matrix[i][k]);
+
+		for (int j = 0; j < k; j++)
+		{
+			r[i] -= matrix[i][j] * x[j];
+		}
+	}
+
+	return r;
+}
+
 //LU-разложение
 vector <vector <double> > LU_decomp(vector <vector <double> > matrix)
 {
@@ -281,11 +300,8 @@ int main()
 {
 	setlocale(LC_ALL, "Rus");
 
-	vector <vector <double> > matrix;
-	vector <vector <double> > LU_matrix;
-	vector <vector <double> > triangle_matrix;
-	vector <vector <double> > inverse_matrix;
-	vector <double> vector_X;
+	vector <vector <double> > matrix, LU_matrix, triangle_matrix, inverse_matrix;
+	vector <double> vector_X, r;
 
 	if (readFile(matrix))
 	{
@@ -317,6 +333,11 @@ int main()
 	cout << "--- ОТВЕТ ---" << endl;
 	cout << "Вектор X" << endl;
 	printVector(vector_X);
+
+	r = residual(matrix, vector_X);
+
+	cout << "Невязки " << endl;
+	printVector(r);
 
 	double det = 1;
 
