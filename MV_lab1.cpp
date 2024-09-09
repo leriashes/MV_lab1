@@ -233,6 +233,50 @@ vector <double> countX(vector <vector <double> > matrix)
 	return result;
 }
 
+double countSum(int i, int j, int start, int end, vector <vector <double> > matrix, vector <vector <double> > resmatrix)
+{
+	double sum = 0;
+
+	for (int k = start; k < end; k++)
+	{
+		sum += matrix[i][k] * resmatrix[k][j];
+	}
+
+	return sum;
+}
+
+//поиск обратной матрицы
+vector <vector <double> > inverseMatrix(vector <vector <double> > matrix)
+{
+	vector <vector <double> > result = matrix;
+
+	int n = matrix.size();
+
+	for (int k = n - 1; k >= 0; k--)
+	{
+		result[k][k] = (1 - countSum(k, k, k + 1, n, matrix, result)) / matrix[k][k];
+
+		for (int i = k - 1; i >= 0; i--)
+		{
+			result[i][k] = (-1) * countSum(i, k, i + 1, n, matrix, result) / matrix[i][i];
+		}
+
+		for (int j = k - 1; j >= 0; j--)
+		{
+			double sum = 0;
+
+			for (int p = j + 1; p < n; p++)
+			{
+				sum += matrix[p][j] * result[k][p];
+			}
+
+			result[k][j] = (-1) * sum;
+		}
+	}
+
+	return result;
+}
+
 int main()
 {
 	setlocale(LC_ALL, "Rus");
@@ -240,6 +284,7 @@ int main()
 	vector <vector <double> > matrix;
 	vector <vector <double> > LU_matrix;
 	vector <vector <double> > triangle_matrix;
+	vector <vector <double> > inverse_matrix;
 	vector <double> vector_X;
 
 	if (readFile(matrix))
@@ -281,6 +326,11 @@ int main()
 	}
 
 	cout << "Определитель \ndet A = " << det;
+
+	inverse_matrix = inverseMatrix(triangle_matrix);
+
+	cout << "\n\nОбратная матрица" << endl;
+	printMatrix(inverse_matrix);
 
 	return 0;
 }
