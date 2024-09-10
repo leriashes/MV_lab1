@@ -121,6 +121,18 @@ void printVector(vector <double> vec)
 	return;
 }
 
+double countSum(int i, int j, int start, int end, vector <vector <double> > firstMatrix, vector <vector <double> > secondMatrix)
+{
+	double sum = 0;
+
+	for (int k = start; k < end; k++)
+	{
+		sum += firstMatrix[i][k] * secondMatrix[k][j];
+	}
+
+	return sum;
+}
+
 //определение невязок
 vector <double> residual(vector <vector <double> > matrix, vector <double> b, vector <double> x)
 {
@@ -160,14 +172,7 @@ vector <vector <double> > LU_decomp(vector <vector <double> > matrix)
 		//столбец L
 		for (int i = k + 1; i < n; i++)
 		{
-			double sum = 0;
-
-			for (int p = 0; p < k; p++)
-			{
-				sum += result[i][p] * result[p][k];
-			}
-
-			result[i][k] = (result[i][k] - sum) / result[k][k];
+			result[i][k] = (result[i][k] - countSum(i, k, 0, k, result, result)) / result[k][k];
 		}
 
 		k++;
@@ -175,14 +180,7 @@ vector <vector <double> > LU_decomp(vector <vector <double> > matrix)
 		//строка U
 		for (int j = k; j < n; j++)
 		{
-			double sum = 0;
-
-			for (int p = 0; p < k; p++)
-			{
-				sum += result[k][p] * result[p][j];
-			}
-
-			result[k][j] -= sum;
+			result[k][j] -= countSum(k, j, 0, k, result, result);
 		}
 	}
 
@@ -237,18 +235,6 @@ vector <double> countX(vector <vector <double> > matrix, vector <double> vectorY
 	return result;
 }
 
-double countSum(int i, int j, int start, int end, vector <vector <double> > matrix, vector <vector <double> > resmatrix)
-{
-	double sum = 0;
-
-	for (int k = start; k < end; k++)
-	{
-		sum += matrix[i][k] * resmatrix[k][j];
-	}
-
-	return sum;
-}
-
 //поиск обратной матрицы
 vector <vector <double> > inverseMatrix(vector <vector <double> > matrix)
 {
@@ -267,14 +253,7 @@ vector <vector <double> > inverseMatrix(vector <vector <double> > matrix)
 
 		for (int j = k - 1; j >= 0; j--)
 		{
-			double sum = 0;
-
-			for (int p = j + 1; p < n; p++)
-			{
-				sum += matrix[p][j] * result[k][p];
-			}
-
-			result[k][j] = (-1) * sum;
+			result[k][j] = (-1) * countSum(k, j, j + 1, n, result, matrix);
 		}
 	}
 
