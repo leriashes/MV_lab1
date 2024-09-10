@@ -6,7 +6,7 @@
 using namespace std;
 
 //чтение файла
-bool readFile(vector <vector <double> >& matrix)
+bool readFile(vector <vector <double> >& matrix, vector <double> & vectorB)
 {
 	int str_start = 0, str_end = 1, str_num = -1;
 	double number;
@@ -56,13 +56,11 @@ bool readFile(vector <vector <double> >& matrix)
 
 		if (!end)
 		{
-			str_num = 0;
-
 			//заполнение столбца свободных членов
 			while (!f.eof())
 			{
 				f >> number;
-				matrix[str_num++].push_back(number);
+				vectorB.push_back(number);
 			}
 
 			//проверка числа строк и столбцов
@@ -72,7 +70,7 @@ bool readFile(vector <vector <double> >& matrix)
 					end = true;
 			}
 
-			if (str_num + 1 != matrix[0].size())
+			if (vectorB.size() != matrix[0].size() || matrix.size() != matrix[0].size())
 			{
 				end = true;
 			}
@@ -123,28 +121,15 @@ void printVector(vector <double> vec)
 	return;
 }
 
-//вывод вектора
-void printVector(vector <vector <double> > matrix, int column)
-{
-	for (int i = 0; i < column; i++)
-	{
-		cout << matrix[i][column] << " " << endl;
-	}
-
-	cout << endl;
-
-	return;
-}
-
 //определение невязок
-vector <double> residual(vector <vector <double> > matrix, vector <double> x)
+vector <double> residual(vector <vector <double> > matrix, vector <double> b, vector <double> x)
 {
 	vector <double> r;
 	int k = matrix.size();
 
 	for (int i = 0; i < k; i++)
 	{
-		r.push_back(matrix[i][k]);
+		r.push_back(b[i]);
 
 		for (int j = 0; j < k; j++)
 		{
@@ -205,11 +190,11 @@ vector <vector <double> > LU_decomp(vector <vector <double> > matrix)
 }
 
 //решение системы Ly = b (поиск y)
-vector <vector <double> > countY(vector <vector <double> > matrix)
+vector <double> countY(vector <vector <double> > matrix, vector <double> vectorB)
 {
-	vector <vector <double> > result;
+	vector <double> result;
 
-	result = matrix;
+	result = vectorB;
 
 	int n = matrix.size();
 
@@ -219,17 +204,17 @@ vector <vector <double> > countY(vector <vector <double> > matrix)
 
 		for (int k = 0; k < i; k++)
 		{
-			sum += result[k][n] * result[i][k];
+			sum += result[k] * matrix[i][k];
 		}
 
-		result[i][n] -= sum;
+		result[i] -= sum;
 	}
 
 	return result;
 }
 
 //решение системы Ux = y (поиск x)
-vector <double> countX(vector <vector <double> > matrix)
+vector <double> countX(vector <vector <double> > matrix, vector <double> vectorY)
 {
 	vector <double> result;
 
@@ -246,7 +231,7 @@ vector <double> countX(vector <vector <double> > matrix)
 			sum += matrix[i][k] * result[k];
 		}
 
-		result[i] = (matrix[i][n] - sum) / matrix[i][i];
+		result[i] = (vectorY[i] - sum) / matrix[i][i];
 	}
 
 	return result;
@@ -326,9 +311,9 @@ int main()
 	setlocale(LC_ALL, "Rus");
 
 	vector <vector <double> > matrix, LU_matrix, triangle_matrix, inverse_matrix;
-	vector <double> vector_X, r;
+	vector <double> vecB, vecX, vecY, r;
 
-	if (readFile(matrix))
+	if (readFile(matrix, vecB))
 	{
 		return -1;
 	}
@@ -340,7 +325,7 @@ int main()
 	int n = matrix.size();
 
 	cout << endl << "Вектор B" << endl;
-	printVector(matrix, n);
+	printVector(vecB);
 
 	LU_matrix = LU_decomp(matrix);
 
@@ -348,18 +333,18 @@ int main()
 	cout << "Матрица L - E + U" << endl;
 	printMatrix(LU_matrix);
 	
-	triangle_matrix = countY(LU_matrix);
+	vecY = countY(LU_matrix, vecB);
 
 	cout << endl << "Вектор Y" << endl;
-	printVector(triangle_matrix, n);
+	printVector(vecY);
 
-	vector_X = countX(triangle_matrix);
+	vecX = countX(LU_matrix, vecY);
 
 	cout << "--- ОТВЕТ ---" << endl;
 	cout << "Вектор X" << endl;
-	printVector(vector_X);
+	printVector(vecX);
 
-	r = residual(matrix, vector_X);
+	r = residual(matrix, vecB, vecX);
 
 	cout << "Невязки " << endl;
 	printVector(r);
@@ -373,7 +358,7 @@ int main()
 
 	cout << "Определитель \ndet A = " << det;
 
-	inverse_matrix = inverseMatrix(triangle_matrix);
+	inverse_matrix = inverseMatrix(LU_matrix);
 
 	cout << "\n\nОбратная матрица" << endl;
 	printMatrix(inverse_matrix);
