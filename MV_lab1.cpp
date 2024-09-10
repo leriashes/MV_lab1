@@ -296,6 +296,31 @@ vector <vector <double> > inverseMatrix(vector <vector <double> > matrix)
 	return result;
 }
 
+//вычисление нормы матрицы
+double normMatr(vector <vector <double> > matrix)
+{
+	int n = matrix.size();
+
+	double maxSum = 0;
+
+	for (int i = 0; i < n; i++)
+	{
+		double sum = 0;
+
+		for (int j = 0; j < n; j++)
+		{
+			sum += abs(matrix[i][j]);
+		}
+
+		if (sum > maxSum)
+		{
+			maxSum = sum;
+		}
+	}
+
+	return maxSum;
+}
+
 int main()
 {
 	setlocale(LC_ALL, "Rus");
@@ -352,6 +377,8 @@ int main()
 
 	cout << "\n\nОбратная матрица" << endl;
 	printMatrix(inverse_matrix);
+
+	cout << "\nЧисло обусловленности \nM = " << normMatr(matrix) * normMatr(inverse_matrix) << endl;
 
 	return 0;
 }
